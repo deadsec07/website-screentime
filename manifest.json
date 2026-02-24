@@ -1,13 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "Website Time Cost",
+  "name": "Website Screen Time — Time Cost Overlay",
+  "short_name": "Website Screen Time",
   "version": "0.1.0",
-  "description": "Minimal overlay showing time spent on site and open count."
-  ,
+  "version_name": "0.1.0-beta",
+  "description": "Track and visualize how much time you spend on each website. Minimal overlay with per-site analytics (today, last 7 days, month, year). 100% local, private.",
+  "homepage_url": "https://hnetechnologies.com",
   "permissions": [
-    "storage",
-    "tabs",
-    "scripting"
+    "storage"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -16,7 +16,7 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "Toggle overlay for this site"
+    "default_title": "Website Screen Time — toggle overlay"
   },
   "content_scripts": [
     {

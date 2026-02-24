@@ -37,6 +37,7 @@
       // Only count time when visible and has focus to approximate attention
       const visible = document.visibilityState === 'visible' && document.hasFocus();
       if (!visible) return;
+      // No paused state — always track when visible/focused
 
       // Cap a runaway delta (sleep/wake etc.)
       if (delta > 5000) delta = 1000;
@@ -80,6 +81,7 @@
       'backdrop-filter: saturate(120%) blur(6px)',
       'display: none',
       'align-items: center',
+      'flex-wrap: wrap',
       'gap: 10px',
       'pointer-events: auto'
     ].join(';'));
@@ -117,13 +119,111 @@
       } catch {}
     });
 
+    const detailsLink = document.createElement('a');
+    detailsLink.href = '#';
+    detailsLink.textContent = 'View details';
+    detailsLink.setAttribute('style', [
+      'color: #9bdcff',
+      'text-decoration: underline',
+      'font-size: 11px'
+    ].join(';'));
+    detailsLink.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleDetailsPanel();
+    });
+
     actions.appendChild(hideBtn);
+    actions.appendChild(detailsLink);
 
     root.appendChild(icon);
     root.appendChild(text);
     root.appendChild(actions);
 
     document.documentElement.appendChild(root);
+
+    // Details panel lives inside root for easy anchoring
+    const panel = document.createElement('div');
+    panel.id = '__wtc_details_panel__';
+    panel.setAttribute('style', [
+      'position: absolute',
+      'right: 0',
+      'top: calc(100% + 8px)',
+      'min-width: 280px',
+      'max-width: 360px',
+      'background: rgba(0,0,0,0.92)',
+      'color: #fff',
+      'padding: 12px',
+      'border-radius: 10px',
+      'box-shadow: 0 10px 24px rgba(0,0,0,0.35)',
+      'border: 1px solid rgba(255,255,255,0.12)',
+      'display: none',
+      'backdrop-filter: saturate(120%) blur(8px)'
+    ].join(';'));
+
+    const head = document.createElement('div');
+    head.setAttribute('style', 'display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;');
+    const title = document.createElement('div');
+    title.textContent = `Details for ${domain}`;
+    title.setAttribute('style', 'font-weight:600; font-size:12px; opacity:0.95;');
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = '✕';
+    closeBtn.setAttribute('style', [
+      'background: transparent', 'color: #fff', 'border: none', 'cursor: pointer', 'font-size: 12px'
+    ].join(';'));
+    closeBtn.addEventListener('click', () => { panel.style.display = 'none'; });
+    head.appendChild(title); head.appendChild(closeBtn);
+
+    const grid = document.createElement('div');
+    grid.id = '__wtc_details_grid__';
+    grid.setAttribute('style', [
+      'display: grid',
+      'grid-template-columns: repeat(2, minmax(0,1fr))',
+      'gap: 8px',
+      'margin-bottom: 10px'
+    ].join(';'));
+
+    const chart = document.createElement('div');
+    chart.id = '__wtc_details_chart__';
+    chart.setAttribute('style', [
+      'height: 56px',
+      'display: flex',
+      'align-items: flex-end',
+      'gap: 3px',
+      'margin-top: 6px',
+      'opacity: 0.9'
+    ].join(';'));
+
+    const chartCaption = document.createElement('div');
+    chartCaption.setAttribute('style', 'font-size: 10px; opacity: 0.7; margin-top: 4px;');
+    chartCaption.textContent = 'Last 30 days (daily)';
+
+    panel.appendChild(head);
+    panel.appendChild(grid);
+    panel.appendChild(chart);
+    panel.appendChild(chartCaption);
+
+    // Panel footer brand link
+    const foot = document.createElement('div');
+    foot.setAttribute('style', [
+      'margin-top: 8px',
+      'font-size: 10px',
+      'opacity: 0.8',
+      'text-align: right'
+    ].join(';'));
+    const footText = document.createElement('span');
+    footText.textContent = 'website screen time by ';
+    const footLink = document.createElement('a');
+    footLink.href = 'https://hnetechnologies.com';
+    footLink.target = '_blank';
+    footLink.rel = 'noopener noreferrer';
+    footLink.textContent = 'hnetechnologies';
+    footLink.setAttribute('style', 'color: #9bdcff; text-decoration: underline;');
+    foot.appendChild(footText);
+    foot.appendChild(footLink);
+    panel.appendChild(foot);
+    root.appendChild(panel);
+
     return root;
   }
 
@@ -172,6 +272,81 @@
     if (!text || !state.summary) return;
     text.textContent = chooseMessage(state.summary);
   }
+
+  async function toggleDetailsPanel() {
+    const panel = document.getElementById('__wtc_details_panel__');
+    if (!panel) return;
+    const visible = panel.style.display !== 'none';
+    if (visible) {
+      panel.style.display = 'none';
+      return;
+    }
+    // Fetch details and render
+    panel.style.display = 'block';
+    try {
+      const res = await sendMsg({ type: 'getDetails', domain });
+      const details = res?.details;
+      if (details) renderDetails(details);
+    } catch {}
+  }
+
+  function renderDetails(details) {
+    // Fill the stats grid
+    const grid = document.getElementById('__wtc_details_grid__');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    const stats = [
+      { icon: '📅', label: 'Today', value: details.todayMs },
+      { icon: '🗓️', label: 'Last 7 days', value: details.last7DaysMs },
+      { icon: '📆', label: 'This month', value: details.thisMonthMs },
+      { icon: '📊', label: 'Last month', value: details.lastMonthMs },
+      { icon: '📈', label: 'This year', value: details.thisYearMs },
+      { icon: '📉', label: 'Last year', value: details.lastYearMs },
+    ];
+
+    for (const s of stats) {
+      const card = document.createElement('div');
+      card.setAttribute('style', [
+        'border: 1px solid rgba(255,255,255,0.12)',
+        'border-radius: 8px',
+        'padding: 8px',
+        'display:flex',
+        'gap:8px',
+        'align-items:center',
+        'background: rgba(255,255,255,0.03)'
+      ].join(';'));
+      const icon = document.createElement('div');
+      icon.textContent = s.icon;
+      icon.setAttribute('style', 'font-size: 14px;');
+      const labels = document.createElement('div');
+      labels.innerHTML = `<div style="font-size:10px; opacity:0.75">${s.label}</div><div style="font-weight:600; font-size:12px">${formatDuration(s.value)}</div>`;
+      card.appendChild(icon);
+      card.appendChild(labels);
+      grid.appendChild(card);
+    }
+
+    // Render simple bar chart for last 30 days
+    const chart = document.getElementById('__wtc_details_chart__');
+    if (!chart) return;
+    chart.innerHTML = '';
+    const series = details.byDayLast30 || [];
+    const max = details.maxMsLast30 || 1;
+    for (const pt of series) {
+      const pct = Math.max(0.05, (pt.ms / max) || 0); // keep tiny bar visible
+      const bar = document.createElement('div');
+      bar.setAttribute('title', `${pt.day}: ${formatDuration(pt.ms)}`);
+      bar.setAttribute('style', [
+        'width: 7px',
+        `height: ${Math.round(8 + 48 * pct)}px`,
+        'background: linear-gradient(180deg, #6ee7ff, #1fb6ff)',
+        'border-radius: 3px 3px 0 0'
+      ].join(';'));
+      chart.appendChild(bar);
+    }
+  }
+
+  
 
   function normalizeDomain(host) {
     return String(host || '').replace(/^www\./i, '').toLowerCase();

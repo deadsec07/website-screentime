@@ -2,7 +2,22 @@
 // Tracks per-domain time and open counts, responds to content script updates,
 // and toggles overlay per domain via the toolbar action.
 
-const DAY_KEY = () => new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+function localDayKey(d = new Date()) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`; // YYYY-MM-DD in local time
+}
+
+const DAY_KEY = () => localDayKey(new Date());
+
+function dayKeyFromDate(d) {
+  try {
+    return localDayKey(new Date(d));
+  } catch (e) {
+    return DAY_KEY();
+  }
+}
 
 function normalizeDomain(urlOrHost) {
   try {
@@ -74,6 +89,80 @@ async function getSummary(domainRaw) {
   return { day, todayMs, lifetimeMs, disabled };
 }
 
+async function getDetails(domainRaw) {
+  const domain = normalizeDomain(domainRaw);
+  const state = await getStore(["usageByDay"]);
+  const usageByDay = state.usageByDay || {};
+
+  const now = new Date();
+  const todayKey = DAY_KEY();
+  const yesterday = new Date(now.getTime() - 86400 * 1000);
+  const yesterdayKey = dayKeyFromDate(yesterday);
+  const yearPrefix = String(now.getFullYear());
+  const monthPrefix = `${yearPrefix}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  // Previous month prefix (handles year boundary)
+  const prevMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const prevMonthPrefix = `${prevMonthDate.getFullYear()}-${String(prevMonthDate.getMonth() + 1).padStart(2, '0')}`;
+
+  let todayMs = 0;
+  let yesterdayMs = 0;
+  let thisMonthMs = 0;
+  let lastMonthMs = 0;
+  let thisYearMs = 0;
+  let lastYearMs = 0;
+  let last7DaysMs = 0;
+
+  // Precompute last-7 and last-30 keys
+  const last7Keys = [];
+  const last30Keys = [];
+  for (let i = 0; i < 30; i++) {
+    const d = new Date(now.getTime() - i * 86400 * 1000);
+    const k = dayKeyFromDate(d);
+    if (i < 7) last7Keys.push(k);
+    last30Keys.push(k);
+  }
+
+  const byDayLast30 = [];
+  let maxMsLast30 = 0;
+
+  // Walk the last30 in reverse to build chronological order later
+  for (let i = last30Keys.length - 1; i >= 0; i--) {
+    const k = last30Keys[i];
+    const ms = usageByDay?.[k]?.domains?.[domain]?.ms || 0;
+    byDayLast30.push({ day: k, ms });
+    if (ms > maxMsLast30) maxMsLast30 = ms;
+  }
+
+  // Aggregate selected windows and calendar periods
+  todayMs = usageByDay?.[todayKey]?.domains?.[domain]?.ms || 0;
+  yesterdayMs = usageByDay?.[yesterdayKey]?.domains?.[domain]?.ms || 0;
+
+  const lastYearPrefix = String(now.getFullYear() - 1);
+  Object.keys(usageByDay).forEach((k) => {
+    const bucket = usageByDay[k]?.domains?.[domain];
+    if (!bucket) return;
+    const ms = bucket.ms || 0;
+    if (k.startsWith(yearPrefix)) thisYearMs += ms;
+    if (k.startsWith(lastYearPrefix)) lastYearMs += ms;
+    if (k.startsWith(monthPrefix)) thisMonthMs += ms;
+    if (k.startsWith(prevMonthPrefix)) lastMonthMs += ms;
+  });
+
+  last7DaysMs = last7Keys.reduce((sum, k) => sum + (usageByDay?.[k]?.domains?.[domain]?.ms || 0), 0);
+
+  return {
+    todayMs,
+    yesterdayMs,
+    last7DaysMs,
+    thisMonthMs,
+    lastMonthMs,
+    thisYearMs,
+    lastYearMs,
+    byDayLast30,
+    maxMsLast30
+  };
+}
+
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   (async () => {
     if (!msg || typeof msg !== "object") return;
@@ -84,6 +173,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     } else if (msg.type === "getSummary") {
       const summary = await getSummary(msg.domain);
       sendResponse({ ok: true, summary });
+    } else if (msg.type === "getDetails") {
+      const details = await getDetails(msg.domain);
+      sendResponse({ ok: true, details });
     } else if (msg.type === "toggleDomain") {
       const domain = normalizeDomain(msg.domain);
       const st = await getStore(["disabledDomains"]);

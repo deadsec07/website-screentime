@@ -6,6 +6,7 @@ Features
 - Per-domain time tracking across days (stored locally)
 - Minimal overlay in the top-right corner
 - Toggle on/off for the current site by clicking the toolbar icon or the “Hide here” button
+- “View details” link opens a tidy analytics panel with per-domain stats (today, last 7 days, this month, last month, this year, last year) and a 30‑day mini chart.
 
 Install (Unpacked)
 1. Build nothing — it’s plain MV3.
@@ -15,6 +16,7 @@ Install (Unpacked)
 5. Visit any site to see the overlay.
 
 How it works
+- Uses local timezone for day boundaries (not UTC) so “today/this month” match your clock.
 - The content script tracks attention time for the current tab when it is visible and focused (approximation of real usage).
 - Every ~5s it syncs deltas to the background service worker.
 - The background aggregates daily and lifetime totals in `chrome.storage.local`.
