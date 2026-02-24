@@ -4,7 +4,7 @@
   "short_name": "Website Screen Time",
   "version": "0.1.0",
   "version_name": "0.1.0-beta",
-  "description": "Track and visualize how much time you spend on each website. Minimal overlay with per-site analytics (today, last 7 days, month, year). 100% local, private.",
+  "description": "Website screen time tracker. Minimal overlay with per-site analytics. 100% local and private.",
   "homepage_url": "https://hnetechnologies.com",
   "permissions": [
     "storage"
@@ -16,7 +16,17 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "Website Screen Time — toggle overlay"
+    "default_title": "Website Screen Time — toggle overlay",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   },
   "content_scripts": [
     {
