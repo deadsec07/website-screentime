@@ -1,0 +1,45 @@
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editors/IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs & coverage
+logs/
+*.log
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+coverage/
+
+# Caches / build outputs
+dist/
+build/
+.cache/
+.parcel-cache/
+.eslintcache
+
+# Node deps (if you add tooling later)
+node_modules/
+
+# Packaging artifacts
+*.zip
+*.crx
+*.pem
+keys/
+secrets/
+
+# Env/config
+.env
+.env.*
+
+#metadata
+metadata/
+_metadata/
+
+#chrom store related marketing stuff
+chrome_store
+
