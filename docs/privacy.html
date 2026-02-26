@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Privacy Policy — Website Screen Time</title>
+  <meta name="description" content="Privacy Policy for Website Screen Time — Time Cost Overlay Chrome Extension." />
+  <style>
+    :root { --bg:#0b1220; --text:#e6f0ff; --muted:#a6b3c7; --brand:#4cc3ff; }
+    html,body { margin:0; font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, sans-serif; background: var(--bg); color: var(--text); }
+    .wrap { max-width: 880px; margin: 0 auto; padding: 48px 20px; }
+    h1 { font-size: 28px; margin: 0 0 14px; }
+    h2 { font-size: 18px; margin-top: 28px; }
+    p,li { color: var(--muted); line-height: 1.65; }
+    a { color: var(--brand); }
+    .muted { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Privacy Policy</h1>
+    <p class="muted">Last updated: <span id="lastUpdated">2026-02-26</span></p>
+
+    <p>Website Screen Time — Time Cost Overlay (the “Extension”) is designed with privacy in mind. This policy explains what data the Extension processes, how it is stored, and your choices.</p>
+
+    <h2>Data We Process</h2>
+    <ul>
+      <li><strong>Local time usage totals per domain</strong>: The Extension records how long you actively spend on each website domain in your browser (e.g., example.com). This is used solely to render the on‑page overlay and the in‑extension analytics panel.</li>
+      <li><strong>No personal content</strong>: The Extension does not read, collect, or transmit page contents, form inputs, passwords, or personal identifiers.</li>
+    </ul>
+
+    <h2>Storage and Transmission</h2>
+    <ul>
+      <li><strong>Local‑only storage</strong>: Usage data is stored exclusively in your browser using <code>chrome.storage.local</code>.</li>
+      <li><strong>No servers</strong>: The Extension does not send data to external servers. There are no analytics, telemetry, or third‑party SDKs.</li>
+    </ul>
+
+    <h2>Retention and Deletion</h2>
+    <ul>
+      <li><strong>Retention</strong>: Usage data remains on your device until you remove the Extension or clear the Extension’s storage.</li>
+      <li><strong>Deletion</strong>: Uninstalling the Extension removes its local data. You can also clear extension data from your browser profile settings.</li>
+    </ul>
+
+    <h2>Permissions</h2>
+    <ul>
+      <li><strong>storage</strong>: Save usage totals locally so data persists across sessions.</li>
+      <li><strong>content script on all sites</strong>: Needed to render the overlay and measure foreground tab visibility/focus time.</li>
+    </ul>
+
+    <h2>Your Choices</h2>
+    <ul>
+      <li><strong>Per‑site visibility</strong>: Hide the overlay on any site from the toolbar icon or the “Hide here” button.</li>
+      <li><strong>Remove data</strong>: Removing the Extension from your browser deletes its local storage.</li>
+    </ul>
+
+    <h2>Children’s Privacy</h2>
+    <p>The Extension does not target children and does not knowingly collect personal information.</p>
+
+    <h2>Data Sharing and Sale</h2>
+    <p>The Extension does not sell, rent, or share your data with third parties.</p>
+
+    <h2>Policy Updates</h2>
+    <p>If this policy changes, we will update the “Last updated” date above. Material changes will be reflected in the repository’s changelog.</p>
+
+    <h2>Contact</h2>
+    <p>Questions? Contact <a href="https://hnetechnologies.com" target="_blank" rel="noopener">hnetechnologies</a>.</p>
+
+    <p><a href="./index.html">Back to Home</a></p>
+  </div>
+  <script>
+    // Keep the date easy to spot and update
+    document.getElementById('lastUpdated').textContent = new Date().toISOString().slice(0,10);
+  </script>
+</body>
+</html>

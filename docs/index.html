@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Website Screen Time — Time Cost Overlay</title>
+  <meta name="description" content="Website screen time tracker. Minimal overlay with per-site analytics. 100% local and private." />
+  <style>
+    :root { --bg:#0b1220; --text:#e6f0ff; --muted:#a6b3c7; --brand:#4cc3ff; }
+    html,body { margin:0; font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, sans-serif; background: var(--bg); color: var(--text); }
+    .wrap { max-width: 880px; margin: 0 auto; padding: 48px 20px; }
+    h1 { font-size: 28px; margin: 0 0 8px; }
+    p { color: var(--muted); line-height: 1.6; }
+    .cta { display:inline-block; margin-top: 12px; padding:10px 14px; border-radius:8px; color:#001; background: var(--brand); text-decoration:none; font-weight:600; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:14px; margin-top: 24px; }
+    .card { background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius: 10px; padding:14px; }
+    footer { margin-top: 36px; font-size: 13px; color: var(--muted); }
+    a { color: var(--brand); }
+  </style>
+  <link rel="icon" href="../icons/icon32.png" />
+  <link rel="apple-touch-icon" href="../icons/icon128.png" />
+  <meta property="og:title" content="Website Screen Time — Time Cost Overlay" />
+  <meta property="og:description" content="Minimal overlay with per-site analytics. 100% local and private." />
+  <meta property="og:image" content="../icons/icon128.png" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="." />
+</head>
+<body>
+  <div class="wrap">
+    <h1>Website Screen Time — Time Cost Overlay</h1>
+    <p>Minimal overlay that shows how much time you’ve already spent on the current site. Per‑site analytics for today, last 7 days, month and year. 100% local and private.</p>
+    <a class="cta" href="https://chrome.google.com/webstore/" target="_blank" rel="noopener">Get it on Chrome</a>
+
+    <div class="grid">
+      <div class="card">
+        <strong>Private by design</strong>
+        <p>All stats are stored locally via Chrome storage. No servers, no tracking, no ads.</p>
+      </div>
+      <div class="card">
+        <strong>Per‑site analytics</strong>
+        <p>See daily and monthly breakdowns with a compact, screenshot‑friendly overlay and details panel.</p>
+      </div>
+      <div class="card">
+        <strong>Simple controls</strong>
+        <p>Hide a site with one click. Toggle visibility from the toolbar.</p>
+      </div>
+    </div>
+
+    <footer>
+      <a href="./privacy.html">Privacy Policy</a>
+      · Built by <a href="https://hnetechnologies.com" rel="noopener" target="_blank">hnetechnologies</a>
+    </footer>
+  </div>
+</body>
+</html>

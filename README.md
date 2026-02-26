@@ -27,6 +27,11 @@ Notes
 - Data never leaves your browser. There’s no network access.
 - If you want the overlay hidden on a site, click the extension icon or the “Hide here” button in the overlay.
 
+Privacy Policy
+- A public privacy policy is included at `docs/privacy.html` and automatically deployed via GitHub Pages.
+- After pushing to GitHub, enable Pages in your repo: Settings → Pages → Source: “GitHub Actions”. The included workflow `.github/workflows/pages.yml` will publish `docs/`.
+- Your policy URL will be: `https://<your-username>.github.io/website-screentime/privacy.html` (adjust for org/repo names). Use this link in the Chrome Web Store “Privacy policy” field.
+
 Folder
 - manifest.json
 - background.js
